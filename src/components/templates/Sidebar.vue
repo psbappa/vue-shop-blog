@@ -31,6 +31,7 @@
           </v-list-item-content>
         </v-list-item>
       </v-list>
+      
     </v-navigation-drawer>
 </template>
 
@@ -41,7 +42,7 @@
         data() {
             return {
                 links: [
-                  {icon: 'mdi-inbox-arrow-down', text: 'Dashboard', route: '/dashboard'},
+                  {icon: 'mdi-inbox-arrow-down', text: 'Dashboard', route: '/'},
                   {icon: 'mdi-send', text: 'Profile', route: '/profile'},
                   {icon: 'mdi-delete', text: 'Products', route: '/products'},
                   {icon: 'mdi-alert-octagon', text: 'Orders', route: '/orders'},

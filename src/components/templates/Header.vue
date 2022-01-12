@@ -8,8 +8,7 @@
     <v-spacer />
     <v-col lg="6" col="12">
         <v-form class="mt-5">
-            <v-text-field 
-              loading rounded outline dense placeholder="search here..." append-icon="mdi-magnify"/>
+            <v-text-field rounded outline dense placeholder="search here..." append-icon="mdi-magnify"/>
         </v-form>
     </v-col>
     <v-spacer />

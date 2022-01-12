@@ -1,12 +1,12 @@
 <template>
-    <div class="products">
-        <h4>Products dashboard</h4>
+    <div class="path-not-found">
+        PathNotFound
     </div>
 </template>
 
 <script>
     export default {
-        name: 'Products'
+        name: 'PathNotFound'
     }
 </script>
 

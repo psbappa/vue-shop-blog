@@ -4,9 +4,9 @@
         <Sidebar :drawer="drawer"/>
         
         <v-main>
-            <div class="py-8 px-6" fluid>
+            <v-container fluid>
                 <router-view />
-            </div>
+            </v-container>
         </v-main>
     </v-app>
 </template>

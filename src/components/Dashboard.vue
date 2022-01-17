@@ -1,5 +1,5 @@
 <template>
-    <div class="admin-dashboard">
+    <div class="py-8 px-6 admin-dashboard">
         <v-row no-gutters>
             <template v-for="n in 4">
               <v-col :key="n">
@@ -63,8 +63,7 @@
             
         },
         data: () => ({
-            cards: ['Today', 'Yesterday'],
-            drawer: true,
+            cards: ['Today', 'Yesterday']
         }),
     }
 </script>

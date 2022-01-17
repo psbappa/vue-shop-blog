@@ -43,9 +43,9 @@
             return {
                 links: [
                   {icon: 'mdi-inbox-arrow-down', text: 'Dashboard', route: '/'},
-                  {icon: 'mdi-send', text: 'Profile', route: '/profile'},
                   {icon: 'mdi-delete', text: 'Products', route: '/products'},
-                  {icon: 'mdi-alert-octagon', text: 'Orders', route: '/orders'},
+                  {icon: 'mdi-send', text: 'Category', route: '/categories'},
+                  {icon: 'mdi-alert-octagon', text: 'Colors', route: '/colors'},
                   {icon: 'mdi-inbox-arrow-up', text: 'System Settings', route: '/settings'},
                 ]
 

@@ -92,23 +92,6 @@
                                                     </v-list-item>
                                                 </template>
                                             </v-select>
-                                            <!-- <v-col cols="12" sm="6" md="4">
-                                                <v-text-field
-                                                    ref="formData.name"
-                                                    v-model="formData.name" 
-                                                    label="Category Name"
-                                                    :rules="[() => !!formData.name || 'This field is required']"
-                                                    required>
-                                                </v-text-field>
-                                            </v-col>
-                                            <v-col cols="12" sm="6" md="8">
-                                                <v-text-field
-                                                    ref="formData.productsAssign"
-                                                    v-model="formData.productsAssign"
-                                                    label="Assign Products"
-                                                    :rules="[() => !!formData.productsAssign || 'This field is required']"
-                                                    required></v-text-field>
-                                            </v-col> -->
                                         </v-row>
                                     </v-container>
                                 </v-card-text>

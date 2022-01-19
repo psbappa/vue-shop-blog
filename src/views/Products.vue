@@ -16,71 +16,6 @@
                     </v-btn>
 
                     <v-dialog v-model="dialog" max-width="1000px">
-                        <!-- Add Product Modal Start-->
-                        <!-- <template v-slot:activator="{ on, attrs }">
-                            <v-btn color="primary" dark class="mb-2" v-bind="attrs" v-on="on"> Add Product </v-btn>
-                        </template>
-                        
-                        <v-card>
-                            <v-card-title>
-                                <span class="text-h5">{{ formTitle }}</span>
-                            </v-card-title>
-
-                            <v-card-text>
-                                <v-container>
-                                    <v-row>
-                                        <v-col cols="12">
-                                            <v-text-field v-model="editedItem.name" label="Product name"></v-text-field>
-                                        </v-col>
-                                        
-                                        <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.price" label="price"></v-text-field>
-                                        </v-col>
-                                        
-                                        <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.weight" label="weight"></v-text-field>
-                                        </v-col>
-
-                                        <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.stockQuantity" label="stockQuantity"></v-text-field>
-                                        </v-col>
-
-                                        <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.brand" label="brand"></v-text-field>
-                                        </v-col>
-                                        
-                                        <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.category" label="category"></v-text-field>
-                                        </v-col>
-                                        
-                                        <v-col cols="12" sm="6" md="4">
-                                            <v-text-field v-model="editedItem.colors" label="colors"></v-text-field>
-                                        </v-col>
-
-                                        <v-col cols="12">
-                                            <v-textarea v-model="editedItem.description" label="description"></v-textarea>
-                                        </v-col>
-                                        
-                                        <v-col cols="12">
-                                            <v-file-input v-model="files" placeholder="Upload your documents" label="Choose product image" multiple prepend-icon="mdi-paperclip">
-                                                <template v-slot:selection="{ text }">
-                                                    <v-chip small label ="primary" > {{ text }} </v-chip>
-                                                    </template>
-                                            </v-file-input>
-                                        </v-col>
-
-
-                                    </v-row>
-                                </v-container>
-                            </v-card-text>
-
-                            <v-card-actions>
-                                <v-spacer></v-spacer>
-                                <v-btn color="blue darken-1" text @click="close" > Cancel </v-btn>
-                                <v-btn color="blue darken-1" text @click="save" > Add </v-btn>
-                            </v-card-actions>
-                        </v-card> -->
-                        <!-- Add Product Modal End-->
                     </v-dialog>
                     <v-dialog v-model="dialogDelete" max-width="500px">
                         <v-card>
@@ -100,7 +35,7 @@
                     <v-icon small class="mr-2" @click="viewItem(item.id)" > mdi-eye </v-icon>
                 </router-link>
                 <v-icon disabled small class="mr-2" @click="editItem(item)" > mdi-pencil </v-icon>
-                <v-icon disabled small @click="deleteItem(item)"> mdi-delete </v-icon>
+                <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
             </template>
             <template v-slot:no-data>
                 No Data found!
@@ -120,7 +55,9 @@
             dialogDelete: false,
             headers: [
                 { text: 'Name (Products)',align: 'start',sortable: false,value: 'name',},
-                { text: 'brand', value: 'brand' },
+                { text: 'Brand', value: 'brand' },
+                { text: 'Stock Quantity', value: 'stockQuantity' },
+                // { text: 'Status' },
                 { text: 'Actions', value: 'actions', sortable: false },
             ],
             defaultProducts: [],                 //this.$store.state.defaultProducts
@@ -133,15 +70,16 @@
             }
         },
 
-        mounted() {
-            // this.$store.dispatch('GET_PRODUCTS')
-            // this.initialize()
+        async mounted() {
+            try{
+                 // this.$store.dispatch('GET_PRODUCTS')
+                // this.initialize()
 
-            axios.get('http://127.0.0.1:8000/api/products').then(res => {
-                this.defaultProducts = res.data['hydra:member']
-            }).catch(e => {
-                console.log(e)
-            })
+                let response = await axios.get('http://127.0.0.1:8000/api/products')
+                this.defaultProducts = response.data['hydra:member']
+            } catch(err) {
+                console.log(err)
+            }
         },
 
         watch: {
@@ -174,10 +112,15 @@
                 // console.log('Selected product is: ', item)
             },
 
-            deleteItem (item) {
-                this.editedIndex = this.defaultProducts.indexOf(item)
-                this.editedItem = Object.assign({}, item)
-                this.dialogDelete = true
+            async deleteItem (item) {
+                await axios.delete(`http://127.0.0.1:8000/api/products/${item.id}`)
+                .then(data => {
+                        if(data.status === 204) {
+                            this.editedIndex = this.defaultProducts.indexOf(item)
+                            this.editedItem = Object.assign({}, item)
+                            this.dialogDelete = true
+                        }
+                    })
             },
 
             deleteItemConfirm () {

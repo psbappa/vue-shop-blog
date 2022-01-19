@@ -4,7 +4,7 @@
         <v-data-table :headers="headers" :items="defaultColors" sort-by="brand" class="elevation-1" >
             <template v-slot:top>
                 <v-toolbar flat >
-                    <v-toolbar-title>All category</v-toolbar-title>
+                    <v-toolbar-title>All colors</v-toolbar-title>
                     <v-divider class="mx-4" inset vertical ></v-divider>
                     <v-spacer></v-spacer>
                     
@@ -21,7 +21,7 @@
                                 <v-card-text>
                                 <v-container>
                                     <v-row>
-                                        <v-col cols="12" sm="6" md="4">
+                                        <v-col cols="12" sm="12" md="12">
                                             <v-text-field
                                                 ref="editedItem.name"
                                                 v-model="editedItem.name"
@@ -29,69 +29,6 @@
                                                 required
                                                 label="Color Name">
                                             </v-text-field>
-                                        </v-col>
-                                        <v-col cols="12" sm="6" md="8">
-                                            <!-- <pre> {{ JSON.stringify(products, null, 2) }}</pre> -->
-                                            <v-select
-                                                v-model="selectedProducts"
-                                                :items="products"
-                                                label="Assign products"
-                                                multiple
-                                                >
-                                                <template v-slot:prepend-item>
-                                                    <v-list-item
-                                                    ripple
-                                                    @mousedown.prevent
-                                                    @click="toggle"
-                                                    >
-                                                    <v-list-item-action>
-                                                        <v-icon :color="selectedProducts.length > 0 ? 'indigo darken-4' : ''">
-                                                        {{ icon }}
-                                                        </v-icon>
-                                                    </v-list-item-action>
-                                                    <v-list-item-content>
-                                                        <v-list-item-title>
-                                                        Select All
-                                                        </v-list-item-title>
-                                                    </v-list-item-content>
-                                                    </v-list-item>
-                                                    <v-divider class="mt-2"></v-divider>
-                                                </template>
-                                                <template v-slot:append-item>
-                                                    <v-divider class="mb-2"></v-divider>
-                                                    <v-list-item disabled>
-                                                    <v-list-item-avatar color="grey lighten-3">
-                                                        <v-icon>
-                                                        mdi-food-apple
-                                                        </v-icon>
-                                                    </v-list-item-avatar>
-
-                                                    <v-list-item-content v-if="likesAllColor">
-                                                        <v-list-item-title>
-                                                        You selected all colors
-                                                        </v-list-item-title>
-                                                    </v-list-item-content>
-
-                                                    <v-list-item-content v-else-if="likesSomeColor">
-                                                        <v-list-item-title>
-                                                        Color Count
-                                                        </v-list-item-title>
-                                                        <v-list-item-subtitle>
-                                                        {{ selectedProducts.length }}
-                                                        </v-list-item-subtitle>
-                                                    </v-list-item-content>
-
-                                                    <v-list-item-content v-else>
-                                                        <v-list-item-title>
-                                                        How could you not like color?
-                                                        </v-list-item-title>
-                                                        <v-list-item-subtitle>
-                                                        Go ahead, make a selection above!
-                                                        </v-list-item-subtitle>
-                                                    </v-list-item-content>
-                                                    </v-list-item>
-                                                </template>
-                                            </v-select>
                                         </v-col>
                                     </v-row>
                                 </v-container>
@@ -124,7 +61,7 @@
                     <v-icon small class="mr-2" @click="viewItem(item.id)" > mdi-eye </v-icon>
                 </router-link>
                 <v-icon small class="mr-2" @click="editItem(item)" > mdi-pencil </v-icon>
-                <v-icon disabled small @click="deleteItem(item)"> mdi-delete </v-icon>
+                <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
             </template>
             <template v-slot:no-data>
                 No Data found!
@@ -157,7 +94,6 @@
             },
 
             products: [],
-            selectedProducts: [],
             defaultProducts: [],
             
         }),
@@ -166,16 +102,8 @@
             formTitle () {
                 return this.editedIndex === -1 ? 'New Color' : 'Edit color'
             },
-
             categoriesCount() {
                 return this.defaultColors.length
-            },
-
-            likesAllColor () {
-                return this.selectedProducts.length === this.products.length
-            },
-            likesSomeColor () {
-                return this.selectedProducts.length > 0 && !this.likesAllColor
             },
             icon () {
                 if (this.likesAllColor) return 'mdi-close-box'
@@ -189,19 +117,18 @@
             }
         },
 
-        mounted() {
+        async mounted() {
             // color fetch
-            axios.get('http://127.0.0.1:8000/api/colors').then(res => {
+            await axios.get('http://127.0.0.1:8000/api/colors').then(res => {
                 this.defaultColors = res.data['hydra:member']
             }).catch(e => {
                 console.log(e)
             })
 
             // Products fetch
-            axios.get('http://127.0.0.1:8000/api/products').then(res => {
+            await axios.get('http://127.0.0.1:8000/api/products').then(res => {
                 this.defaultProducts = res.data['hydra:member']
                 this.defaultProducts.filter(item => {
-                    // this.products.push({ productsUriId: item['@id'] , name: item.name })
                     this.products.push(item['@id'])
                 })
             }).catch(e => {
@@ -229,16 +156,6 @@
                 // console.log('Test: ', this.$store.state.products)
             },
 
-            toggle () {
-                this.$nextTick(() => {
-                    if (this.likesAllColor) {
-                        this.selectedProducts = []
-                    } else {
-                        this.selectedProducts = this.products.slice()
-                    }
-                })
-            },
-
             editItem (item) {
                 this.editedIndex = this.defaultColors.indexOf(item)
                 this.editedItem = Object.assign({}, item)
@@ -249,10 +166,15 @@
                 // console.log('Selected product is: ', item)
             },
 
-            deleteItem (item) {
-                this.editedIndex = this.defaultColors.indexOf(item)
-                this.editedItem = Object.assign({}, item)
-                this.dialogDelete = true
+            async deleteItem (item) {
+                await axios.delete(`http://127.0.0.1:8000/api/colors/${item.id}`)
+                    .then(data => {
+                        if(data.status === 204) {
+                            this.editedIndex = this.defaultColors.indexOf(item)
+                            this.editedItem = Object.assign({}, item)
+                            this.dialogDelete = true
+                        }
+                    })
             },
 
             deleteItemConfirm () {
@@ -276,31 +198,30 @@
                 })
             },
 
-            save () {
-                // let selProducts = []
+            async save () {
                 if(this.$refs.form.validate()) {
-                    // this.selectedProducts.filter(item => {
-                    //     selProducts.push(item)
-                    // })
 
                     let currentObj = {
                         name: this.editedItem.name,
-                        hexColor:"ff0000"
+                        hexColor:"ff0000",
                         // colors: selProducts
                     }
-
-                    console.log('Data: ', currentObj)
-
-                    axios.post('http://127.0.0.1:8000/api/colors', currentObj)
-                    .then(function (response) {
-                        console.log(response)
-                    })
-                    .catch(function (error) {
-                        console.log(error.response.data)
-                    });
-
-
                     
+                    let response = await axios.post('http://127.0.0.1:8000/api/colors', currentObj)
+                    if(response.status === 201) {
+                        console.log(this.editedItem, '--::--', response.data)
+                    }
+
+                    // axios.post('http://127.0.0.1:8000/api/colors', currentObj)
+                    //     .then(function (response) {
+                    //         console.log(response)
+                            // if(response.status === 201) {
+                            //     console.log(this.editedItem, '--::--', response.data['hydra:member'])
+                            // }
+                    //     })
+                    //     .catch(function (error) {
+                    //         console.log(error.response.data)
+                    //     });
                 } else {
                     this.formHasErrors = true
                     console.log('Not valid')

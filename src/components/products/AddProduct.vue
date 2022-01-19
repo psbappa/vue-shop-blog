@@ -103,8 +103,6 @@
                                     v-model="formData.colors"
                                     :items="this.colors" 
                                     filled
-                                    :rules="[() => !!formData.colors || 'This field is required']"
-                                    required
                                     background-color="cyan darken-2"
                                     label="colors" 
                                     dense >
@@ -216,34 +214,20 @@
                 }
             }
         },
-        mounted() {
-            // category fetch
-            let productCategories = []
-            axios.get('http://127.0.0.1:8000/api/categories').then(res => {
-                this.categories = res.data['hydra:member']
-                this.categories.filter(item => {
-                    productCategories.push(item.name)
-                    this.categories = productCategories
+        async mounted() {
+            try{
+                let categoryResponse = await axios.get('http://127.0.0.1:8000/api/categories')
+                categoryResponse.data['hydra:member'].filter(item => {
+                    this.categories.push(item['@id'])
                 })
 
-            }).catch(e => {
-                console.log('Something went wrong: ', e)
-            })
-
-            // color fetch
-            let productColors = []
-            axios.get('http://127.0.0.1:8000/api/colors').then(res => {
-                this.colors = res.data['hydra:member']
-                
-                this.colors.filter(item => {
-                    productColors.push(item.name)
-                    this.colors = productColors
-                    console.log('Colors: ', this.colors)
+                let colorResponse = await axios.get('http://127.0.0.1:8000/api/colors')
+                colorResponse.data['hydra:member'].filter(item => {
+                    this.colors.push(item['@id'])
                 })
-
-            }).catch(e => {
-                console.log('Something went wrong: ', e)
-            })
+            } catch(err) {
+                console.log(err)
+            }
         },
         watch: {
             name () {
@@ -255,9 +239,25 @@
                 return this.$router.back()
             },
 
-            save () {
+            async save () {
                 if(this.$refs.form.validate()) {
-                    console.log('Data: ', this.formData)
+                    let currentObj = {
+                        name: this.formData.name ? this.formData.name : '',
+                        brand: this.formData.brand ? this.formData.brand : '',
+                        weight: this.formData.weight ? parseFloat(this.formData.weight) : '',
+                        price: this.formData.price ? parseInt(this.formData.price) : '',
+                        description: this.formData.description ? this.formData.description : '',
+                        stockQuantity: this.formData.stockQuantity ? parseInt(this.formData.stockQuantity) : '',
+                        imageFilename: this.formData.imageFilename != null ? this.formData.imageFilename : '',
+                        category: this.formData.category ? this.formData.category : '',
+                        colors: this.formData.colors ? [this.formData.colors] : '',
+                        files: this.formData.files != null ? this.formData.files : [],
+                    }
+
+                    let response = await axios.post('http://127.0.0.1:8000/api/products', currentObj)
+                    if(response.status === 201) {
+                        this.$router.back()
+                    }
                 } else {
                     this.formHasErrors = true
                     console.log('Not valid')

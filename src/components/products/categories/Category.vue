@@ -81,6 +81,7 @@
             dialog: false,
             dialogDelete: false,
             headers: [
+                { text: 'ID (Category)',align: 'start',sortable: true,value: 'id',},
                 { text: 'Category Name (Products)',align: 'start',sortable: false,value: 'name',},
                 { text: 'Actions', value: 'actions', sortable: false },
             ],
@@ -92,9 +93,6 @@
             defaultItem: {
                 name: '',
             },
-
-            products: [],
-            defaultProducts: [],
             
         }),
 
@@ -114,20 +112,8 @@
         },
 
         async mounted() {
-            // Category fetch
             await axios.get('http://127.0.0.1:8000/api/categories').then(res => {
                 this.defaultCategories = res.data['hydra:member']
-            }).catch(e => {
-                console.log(e)
-            })
-
-            // Products fetch
-            await axios.get('http://127.0.0.1:8000/api/products').then(res => {
-                this.defaultProducts = res.data['hydra:member']
-                this.defaultProducts.filter(item => {
-                    // this.products.push({ productsUriId: item['@id'] , name: item.name })
-                    this.products.push(item['@id'])
-                })
             }).catch(e => {
                 console.log(e)
             })
@@ -157,6 +143,7 @@
                 this.editedIndex = this.defaultCategories.indexOf(item)
                 this.editedItem = Object.assign({}, item)
                 this.dialog = true
+                console.log('editedIndex: ' ,this.editedIndex, 'editedItem: ' ,this.editedItem)
             },
 
             viewItem () {
@@ -195,36 +182,39 @@
                 })
             },
 
-            save () {
-                let selProducts = []
-                if(this.$refs.form.validate()) {
+            async save () {
+                if (this.editedIndex > -1) {
+                    console.log('Edited!...')
+                    if(this.$refs.form.validate()) {
+                        let currentObj = {
+                            name: this.editedItem.name
+                        }
 
-                    let currentObj = {
-                        name: this.editedItem.name,
-                        products: selProducts,
+                        let response = await axios.put(`http://127.0.0.1:8000/api/categories/${this.editedItem.id}`, currentObj)
+                        if(response.status === 200) {
+                            Object.assign(this.defaultCategories[this.editedIndex], this.editedItem)
+                        }
+                    } else {
+                        this.formHasErrors = true
+                        console.log('Not valid')
                     }
-
-                    axios.post('http://127.0.0.1:8000/api/categories', currentObj)
-                        .then(function (response) {
-                            console.log(response)
-                        })
-                        .catch(function (error) {
-                            console.log(error.response.data)
-                        });
-
-
-                    
                 } else {
-                    this.formHasErrors = true
-                    console.log('Not valid')
-                }
+                    console.log('Newly Added!...')
+                    if(this.$refs.form.validate()) {
+                        let currentObj = {
+                            name: this.editedItem.name
+                        }
 
-                // if (this.editedIndex > -1) {
-                //     Object.assign(this.defaultCategories[this.editedIndex], this.editedItem)
-                // } else {
-                //     this.defaultCategories.push(this.editedItem)
-                // }
-                // this.close()
+                        let response = await axios.post(`http://127.0.0.1:8000/api/categories`, currentObj)
+                        if(response.status === 201) {
+                            this.defaultCategories.push(this.editedItem)
+                        }
+                    } else {
+                        this.formHasErrors = true
+                        console.log('Not valid')
+                    }
+                }
+                this.close()
             },
         },
   }

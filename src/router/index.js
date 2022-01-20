@@ -44,7 +44,7 @@ const routes = [
     component: Color
   },
   {
-    path: '/setting',
+    path: '/settings',
     name: 'Setting',
     component: Setting
   },

@@ -1,10 +1,10 @@
 <template>
     <div class="py-8 px-6">
-        <h2 class="text-center">Total Colors : {{ categoriesCount }}</h2>
+        <h2 class="text-center">Total Colors : {{ colorsCount }}</h2>
         <v-data-table :headers="headers" :items="defaultColors" sort-by="brand" class="elevation-1" >
             <template v-slot:top>
                 <v-toolbar flat >
-                    <v-toolbar-title>All colors</v-toolbar-title>
+                    <v-toolbar-title>All Colors</v-toolbar-title>
                     <v-divider class="mx-4" inset vertical ></v-divider>
                     <v-spacer></v-spacer>
                     
@@ -81,7 +81,8 @@
             dialog: false,
             dialogDelete: false,
             headers: [
-                { text: 'Colors Name (Products)',align: 'start',sortable: false,value: 'name',},
+                // { text: 'ID (Colors)',align: 'start',sortable: true, value: 'id',},
+                { text: 'Color Name (Products)',align: 'start',sortable: false,value: 'name',},
                 { text: 'Actions', value: 'actions', sortable: false },
             ],
             defaultColors: [],
@@ -92,23 +93,16 @@
             defaultItem: {
                 name: '',
             },
-
-            products: [],
-            defaultProducts: [],
             
         }),
 
         computed: {
             formTitle () {
-                return this.editedIndex === -1 ? 'New Color' : 'Edit color'
+                return this.editedIndex === -1 ? 'New Color' : 'Edit Color'
             },
-            categoriesCount() {
+
+            colorsCount() {
                 return this.defaultColors.length
-            },
-            icon () {
-                if (this.likesAllColor) return 'mdi-close-box'
-                if (this.likesSomeColor) return 'mdi-minus-box'
-                return 'mdi-checkbox-blank-outline'
             },
             form() {
                 return {
@@ -118,19 +112,8 @@
         },
 
         async mounted() {
-            // color fetch
             await axios.get('http://127.0.0.1:8000/api/colors').then(res => {
                 this.defaultColors = res.data['hydra:member']
-            }).catch(e => {
-                console.log(e)
-            })
-
-            // Products fetch
-            await axios.get('http://127.0.0.1:8000/api/products').then(res => {
-                this.defaultProducts = res.data['hydra:member']
-                this.defaultProducts.filter(item => {
-                    this.products.push(item['@id'])
-                })
             }).catch(e => {
                 console.log(e)
             })
@@ -199,40 +182,40 @@
             },
 
             async save () {
-                if(this.$refs.form.validate()) {
+                if (this.editedIndex > -1) {
+                    console.log('Edited ID is: ', this.editedItem)
+                    if(this.$refs.form.validate()) {
+                        let currentObj = {
+                            name: this.editedItem.name
+                        }
 
-                    let currentObj = {
-                        name: this.editedItem.name,
-                        hexColor:"ff0000",
-                        // colors: selProducts
+                        let response = await axios.put(`http://127.0.0.1:8000/api/colors/${this.editedItem.id}`, currentObj)
+                        
+                        if(response.status === 200) {
+                            Object.assign(this.defaultColors[this.editedIndex], this.editedItem)
+                        }
+                    } else {
+                        this.formHasErrors = true
+                        console.log('Not valid')
                     }
-                    
-                    let response = await axios.post('http://127.0.0.1:8000/api/colors', currentObj)
-                    if(response.status === 201) {
-                        console.log(this.editedItem, '--::--', response.data)
-                    }
-
-                    // axios.post('http://127.0.0.1:8000/api/colors', currentObj)
-                    //     .then(function (response) {
-                    //         console.log(response)
-                            // if(response.status === 201) {
-                            //     console.log(this.editedItem, '--::--', response.data['hydra:member'])
-                            // }
-                    //     })
-                    //     .catch(function (error) {
-                    //         console.log(error.response.data)
-                    //     });
                 } else {
-                    this.formHasErrors = true
-                    console.log('Not valid')
-                }
+                    console.log('Newly Added!...')
+                    if(this.$refs.form.validate()) {
+                        let currentObj = {
+                            name: this.editedItem.name,
+                            hexColor:"ff0000",
+                        }
 
-                // if (this.editedIndex > -1) {
-                //     Object.assign(this.defaultColors[this.editedIndex], this.editedItem)
-                // } else {
-                //     this.defaultColors.push(this.editedItem)
-                // }
-                // this.close()
+                        let response = await axios.post(`http://127.0.0.1:8000/api/colors`, currentObj)
+                        if(response.status === 201) {
+                            this.defaultColors.push(this.editedItem)
+                        }
+                    } else {
+                        this.formHasErrors = true
+                        console.log('Not valid')
+                    }
+                }
+                this.close()
             },
         },
   }

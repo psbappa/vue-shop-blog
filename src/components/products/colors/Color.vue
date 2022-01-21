@@ -58,7 +58,7 @@
             </template>
             <template v-slot:item.actions="{ item }">
                 <router-link :to="{ name: 'ViewProduct', params: { id: item.id } }" tag="button">
-                    <v-icon small class="mr-2" @click="viewItem(item.id)" > mdi-eye </v-icon>
+                    <v-icon style="display: none;" small class="mr-2" @click="viewItem(item.id)" > mdi-eye </v-icon>
                 </router-link>
                 <v-icon small class="mr-2" @click="editItem(item)" > mdi-pencil </v-icon>
                 <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
@@ -81,7 +81,7 @@
             dialog: false,
             dialogDelete: false,
             headers: [
-                // { text: 'ID (Colors)',align: 'start',sortable: true, value: 'id',},
+                { text: 'ID (Colors)',align: 'start',sortable: true, value: 'id',},
                 { text: 'Color Name (Products)',align: 'start',sortable: false,value: 'name',},
                 { text: 'Actions', value: 'actions', sortable: false },
             ],
@@ -208,7 +208,7 @@
 
                         let response = await axios.post(`http://127.0.0.1:8000/api/colors`, currentObj)
                         if(response.status === 201) {
-                            this.defaultColors.push(this.editedItem)
+                            this.defaultColors.push(response.data)
                         }
                     } else {
                         this.formHasErrors = true

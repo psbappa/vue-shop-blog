@@ -200,19 +200,19 @@
             }
         },
         computed: {
-            form() {
-                return {
-                    name: this.formData.name,
-                    brand: this.formData.brand,
-                    weight: this.formData.weight,
-                    price: this.formData.price,
-                    description: this.formData.description,
-                    stockQuantity: this.formData.stockQuantity,
-                    imageFilename: this.formData.imageFilename,
-                    category: this.formData.category,
-                    colors: this.formData.colors,
-                }
-            }
+            // form() {
+            //     return {
+            //         name: this.formData.name,
+            //         brand: this.formData.brand,
+            //         weight: this.formData.weight,
+            //         price: this.formData.price,
+            //         description: this.formData.description,
+            //         stockQuantity: this.formData.stockQuantity,
+            //         imageFilename: this.formData.imageFilename,
+            //         category: this.formData.category,
+            //         colors: this.formData.colors,
+            //     }
+            // }
         },
         async mounted() {
             try{

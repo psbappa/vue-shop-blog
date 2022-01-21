@@ -4,7 +4,7 @@
         <v-data-table :headers="headers" :items="defaultProducts" sort-by="brand" class="elevation-1" >
             <template v-slot:top>
                 <v-toolbar flat >
-                    <v-toolbar-title>defaultProducts Sections</v-toolbar-title>
+                    <v-toolbar-title>Products</v-toolbar-title>
                     <v-divider class="mx-4" inset vertical ></v-divider>
                     <v-spacer></v-spacer>
                     
@@ -312,16 +312,16 @@
             close () {
                 this.dialog = false
                 this.$nextTick(() => {
-                this.editedItem = Object.assign({}, this.defaultItem)
-                this.editedIndex = -1
+                    this.editedItem = Object.assign({}, this.defaultItem)
+                    this.editedIndex = -1
                 })
             },
 
             closeDelete () {
                 this.dialogDelete = false
                 this.$nextTick(() => {
-                this.editedItem = Object.assign({}, this.defaultItem)
-                this.editedIndex = -1
+                    this.editedItem = Object.assign({}, this.defaultItem)
+                    this.editedIndex = -1
                 })
             },
 
@@ -516,8 +516,8 @@ products.vue
             closeDelete () {
                 this.dialogDelete = false
                 this.$nextTick(() => {
-                this.editedItem = Object.assign({}, this.defaultItem)
-                this.editedIndex = -1
+                    this.editedItem = Object.assign({}, this.defaultItem)
+                    this.editedIndex = -1
                 })
             },
         },

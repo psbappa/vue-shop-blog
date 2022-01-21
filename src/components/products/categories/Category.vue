@@ -58,7 +58,7 @@
             </template>
             <template v-slot:item.actions="{ item }">
                 <router-link :to="{ name: 'ViewProduct', params: { id: item.id } }" tag="button">
-                    <v-icon small class="mr-2" @click="viewItem(item.id)" > mdi-eye </v-icon>
+                    <v-icon style="display: none;" small class="mr-2" @click="viewItem(item.id)" > mdi-eye </v-icon>
                 </router-link>
                 <v-icon small class="mr-2" @click="editItem(item)" > mdi-pencil </v-icon>
                 <v-icon small @click="deleteItem(item)"> mdi-delete </v-icon>
@@ -111,6 +111,10 @@
             }
         },
 
+        // beforeMount() {
+        //     console.log('Before mounted')
+        // },
+
         async mounted() {
             await axios.get('http://127.0.0.1:8000/api/categories').then(res => {
                 this.defaultCategories = res.data['hydra:member']
@@ -126,6 +130,10 @@
             dialogDelete (val) {
                 val || this.closeDelete()
             },
+            async watchComponent() {
+                let check = await axios.get(`http://127.0.0.1:8000/api/categories`)
+                console.log(check)
+            }
         },
 
         methods: {
@@ -169,16 +177,16 @@
             close () {
                 this.dialog = false
                 this.$nextTick(() => {
-                this.editedItem = Object.assign({}, this.defaultItem)
-                this.editedIndex = -1
+                    this.editedItem = Object.assign({}, this.defaultItem)
+                    this.editedIndex = -1
                 })
             },
 
             closeDelete () {
                 this.dialogDelete = false
                 this.$nextTick(() => {
-                this.editedItem = Object.assign({}, this.defaultItem)
-                this.editedIndex = -1
+                    this.editedItem = Object.assign({}, this.defaultItem)
+                    this.editedIndex = -1
                 })
             },
 
@@ -199,7 +207,6 @@
                         console.log('Not valid')
                     }
                 } else {
-                    console.log('Newly Added!...')
                     if(this.$refs.form.validate()) {
                         let currentObj = {
                             name: this.editedItem.name
@@ -207,7 +214,7 @@
 
                         let response = await axios.post(`http://127.0.0.1:8000/api/categories`, currentObj)
                         if(response.status === 201) {
-                            this.defaultCategories.push(this.editedItem)
+                            this.defaultCategories.push(response.data)
                         }
                     } else {
                         this.formHasErrors = true

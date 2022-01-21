@@ -124,7 +124,37 @@
                             </v-col>
                             
                             <v-col cols="12">
-                                <v-file-input
+                                <div class="form-group">
+                                    <label for="my-file">Select Image</label>
+                                    <input type="file" accept="image/*" multiple="multiple" @change="previewMultiImage" class="form-control-file" id="my-file">
+                                
+                                    <div class="border p-2 mt-3">
+                                        <template v-if="preview_list.length">
+                                            <p>Preview Here:</p>
+                                            <v-container>
+                                                <v-row>
+                                                    <v-col v-for="item, index in preview_list" :key="index" class="mt-2 mb-2" color="grey lighten-3" flat cols="12" md="4">
+                                                        <v-toolbar flat dense color="transparent" class="font-weight-bold">
+                                                            <v-col>
+                                                                <p class="mb-0">file name: {{ image_list[index].name }}</p>
+                                                                <p>size: {{ image_list[index].size/1024 }}KB</p>
+                                                            </v-col>
+                                                        </v-toolbar>
+                                                        <div class="header">
+                                                            <v-img :src="item" height="150px" width="250px"></v-img>
+                                                            <!-- <div class="button"><a href="#"> Mark Primary </a></div> -->
+                                                            <div class="btn-section">
+                                                                <div class="button right-btn"><a href="#"> Mark Primary </a></div>
+                                                            </div>
+                                                        </div>
+                                                    </v-col>
+                                                </v-row>
+                                            </v-container>
+                                        </template>
+                                    </div>
+                                </div>
+
+                                <!-- <v-file-input
                                     ref="formData.files"
                                     accept="image/*"
                                     v-model="formData.files"
@@ -132,7 +162,7 @@
                                     :error-messages="errorMessages"
                                     background-color="cyan darken-2"
                                     @update:error="updateError()"
-                                ></v-file-input>
+                                ></v-file-input> -->
                             </v-col>
                         </v-row>
                     </v-container>
@@ -178,10 +208,8 @@
                 //     price: '',
                 //     description: '',
                 //     stockQuantity: 0,
-                //     imageFilename: '',
                 //     category: '',
                 //     colors: '',
-
                 // },
                 formData: {
                     name: '',
@@ -190,11 +218,11 @@
                     price: '',
                     description: '',
                     stockQuantity: '0',
-                    imageFilename: '',
                     category: '',
                     colors: '',
-                    files: [],
                 },
+                preview_list: [],
+                image_list: [],
                 categories: [],
                 colors: [],
             }
@@ -208,7 +236,6 @@
             //         price: this.formData.price,
             //         description: this.formData.description,
             //         stockQuantity: this.formData.stockQuantity,
-            //         imageFilename: this.formData.imageFilename,
             //         category: this.formData.category,
             //         colors: this.formData.colors,
             //     }
@@ -248,7 +275,6 @@
                         price: this.formData.price ? parseInt(this.formData.price) : '',
                         description: this.formData.description ? this.formData.description : '',
                         stockQuantity: this.formData.stockQuantity ? parseInt(this.formData.stockQuantity) : '',
-                        imageFilename: this.formData.imageFilename != null ? this.formData.imageFilename : '',
                         category: this.formData.category ? this.formData.category : '',
                         colors: this.formData.colors ? [this.formData.colors] : '',
                         files: this.formData.files != null ? this.formData.files : [],
@@ -272,11 +298,60 @@
             },
             resetForm() {
                 console.log('Reset')
-            }
+            },
+            previewMultiImage: function(event) {
+                var input = event.target;
+                var count = input.files.length;
+                var index = 0;
+                if (input.files) {
+                    while(count --) {
+                        var reader = new FileReader();
+                        reader.onload = (e) => {
+                            this.preview_list.push(e.target.result);
+                        }
+                        this.image_list.push(input.files[index]);
+                        reader.readAsDataURL(input.files[index]);
+                        index ++;
+                    }
+                }
+            },
         },
     }
 </script>
 
 <style scoped>
+    .header {
+        position: relative;
+        /* margin-top: 50px; */
+        width: 250px;
+        height: 300px;
+    }
 
+    .header:hover {
+        display: block;
+        /*   background: rgba(0, 0, 0, .3); */
+    }
+
+    .button {
+        position: absolute;
+        /* width: 160px; */
+        left:78px;
+        top: 70px;
+        text-align: center;
+        opacity: 0;
+        transition: opacity .35s ease;
+    }
+
+    .button a {
+        width: 200px;
+        padding: 4px 4px;
+        text-align: center;
+        color: white;
+        border: solid 2px white;
+        z-index: 1;
+    }
+
+    .header:hover .button {
+        opacity: 1;
+    }
 </style>

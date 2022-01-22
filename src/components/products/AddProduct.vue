@@ -123,46 +123,73 @@
                                     </v-textarea>
                             </v-col>
                             
-                            <v-col cols="12">
-                                <div class="form-group">
-                                    <label for="my-file">Select Image</label>
-                                    <input type="file" accept="image/*" multiple="multiple" @change="previewMultiImage" class="form-control-file" id="my-file">
-                                
-                                    <div class="border p-2 mt-3">
-                                        <template v-if="preview_list.length">
-                                            <p>Preview Here:</p>
-                                            <v-container>
-                                                <v-row>
-                                                    <v-col v-for="item, index in preview_list" :key="index" class="mt-2 mb-2" color="grey lighten-3" flat cols="12" md="4">
-                                                        <v-toolbar flat dense color="transparent" class="font-weight-bold">
-                                                            <v-col>
-                                                                <p class="mb-0">file name: {{ image_list[index].name }}</p>
-                                                                <p>size: {{ image_list[index].size/1024 }}KB</p>
-                                                            </v-col>
-                                                        </v-toolbar>
-                                                        <div class="header">
-                                                            <v-img :src="item" height="150px" width="250px"></v-img>
-                                                            <!-- <div class="button"><a href="#"> Mark Primary </a></div> -->
-                                                            <div class="btn-section">
-                                                                <div class="button right-btn"><a href="#"> Mark Primary </a></div>
-                                                            </div>
-                                                        </div>
-                                                    </v-col>
-                                                </v-row>
-                                            </v-container>
-                                        </template>
+                            <v-col cols="12" class="container my-3">
+                                <div class="row">
+                                    <div class="col-12 text-center">
+                                        <h1 class="mb-3">Upload Image</h1>
+                                    </div>
+                                    <div class="col-md-5 offset-md-1">
+                                        <h5>1. Primary image</h5>
+                                        <form>
+                                            <div class="form-group">
+                                            <label for="my-file">Select Image</label>
+                                            <input type="file" accept="image/*" @change="previewImage" class="form-control-file" id="my-file">
+                                        
+                                            <div class="border p-2 mt-3">
+                                                <p>Preview Here:</p>
+                                                <template v-if="preview">
+                                                    <v-img :src="preview" height="82px" width="115px"></v-img>
+                                                    <!-- <img src="" class="img-fluid" />
+                                                    <p class="mb-0">file name: </p>
+                                                    <p class="mb-0">size: KB</p> -->
+                                                </template>
+                                            </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    
+                                    <div class="col-md-5">
+                                        <h5>2. Secondary Images</h5>
+                                        <form>
+                                            <div class="form-group">
+                                                <label for="my-file">Select Image</label>
+                                                <input type="file" accept="image/*" multiple="multiple" @change="previewMultiImage" class="form-control-file" id="my-file">
+                                            
+                                                <div class="border">
+                                                    <template v-if="preview_list.length">
+                                                        <p>Preview Here:</p>
+                                                        <v-container>
+                                                            <v-row no-gutters>
+                                                                <v-col v-for="item, index in preview_list" :key="index" color="grey lighten-3" flat cols="12" md="4">
+                                                                    <v-toolbar flat dense color="transparent" class="font-weight-bold">
+                                                                        <!-- <v-col>
+                                                                            <p class="mb-0">file name: {{ image_list[index].name }}</p>
+                                                                            <p>size: {{ image_list[index].size/1024 }}KB</p>
+                                                                        </v-col> -->
+                                                                    </v-toolbar>
+                                                                    <div class="header">
+                                                                        <v-img :src="item" height="82px" width="115px"></v-img>
+                                                                        <!-- <div class="btn-section">
+                                                                            <div class="button right-btn"><a href="#"> Mark Primary </a></div>
+                                                                        </div> -->
+                                                                    </div>
+                                                                </v-col>
+                                                            </v-row>
+                                                        </v-container>
+                                                    </template>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                    
+                                    <div class="w-100"></div>
+                                    <div class="col-12 mt-3 text-center">
+                                        <p class="text-primary">* You should send data "image" & "image_list" via API to upload image files.</p>
+                                        Reset input file <button @click="reset">Clear All</button>
                                     </div>
                                 </div>
 
-                                <!-- <v-file-input
-                                    ref="formData.files"
-                                    accept="image/*"
-                                    v-model="formData.files"
-                                    label="File input"
-                                    :error-messages="errorMessages"
-                                    background-color="cyan darken-2"
-                                    @update:error="updateError()"
-                                ></v-file-input> -->
+                                
                             </v-col>
                         </v-row>
                     </v-container>
@@ -221,6 +248,8 @@
                     category: '',
                     colors: '',
                 },
+                preview: null,
+                image: null,
                 preview_list: [],
                 image_list: [],
                 categories: [],
@@ -280,10 +309,12 @@
                         files: this.formData.files != null ? this.formData.files : [],
                     }
 
-                    let response = await axios.post('http://127.0.0.1:8000/api/products', currentObj)
-                    if(response.status === 201) {
-                        this.$router.back()
-                    }
+                    console.log('currentObject: ', currentObj)
+
+                    // let response = await axios.post('http://127.0.0.1:8000/api/products', currentObj)
+                    // if(response.status === 201) {
+                    //     this.$router.back()
+                    // }
                 } else {
                     this.formHasErrors = true
                     console.log('Not valid')
@@ -298,6 +329,17 @@
             },
             resetForm() {
                 console.log('Reset')
+            },
+            previewImage: function(event) {
+                var input = event.target;
+                if (input.files) {
+                    var reader = new FileReader();
+                    reader.onload = (e) => {
+                    this.preview = e.target.result;
+                    }
+                    this.image=input.files[0];
+                    reader.readAsDataURL(input.files[0]);
+                }
             },
             previewMultiImage: function(event) {
                 var input = event.target;
@@ -315,6 +357,13 @@
                     }
                 }
             },
+            reset: function() {
+                console.log('Reset!...')
+                // this.image = null;
+                // this.preview = null;
+                // this.image_list = [];
+                // this.preview_list = [];
+            }
         },
     }
 </script>
@@ -324,7 +373,7 @@
         position: relative;
         /* margin-top: 50px; */
         width: 250px;
-        height: 300px;
+        /* height: 300px; */
     }
 
     .header:hover {

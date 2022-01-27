@@ -309,12 +309,12 @@
                         files: this.formData.files != null ? this.formData.files : [],
                     }
 
-                    console.log('currentObject: ', currentObj)
+                    // console.log('currentObject: ', currentObj)
 
-                    // let response = await axios.post('http://127.0.0.1:8000/api/products', currentObj)
-                    // if(response.status === 201) {
-                    //     this.$router.back()
-                    // }
+                    let response = await axios.post('http://127.0.0.1:8000/api/products', currentObj)
+                    if(response.status === 201) {
+                        this.$router.back()
+                    }
                 } else {
                     this.formHasErrors = true
                     console.log('Not valid')

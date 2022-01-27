@@ -46,7 +46,7 @@
                   {icon: 'mdi-delete', text: 'Products', route: '/products'},
                   {icon: 'mdi-send', text: 'Category', route: '/categories'},
                   {icon: 'mdi-alert-octagon', text: 'Colors', route: '/colors'},
-                  {icon: 'mdi-inbox-arrow-up', text: 'System Settings', route: '/settings'},
+                  // {icon: 'mdi-inbox-arrow-up', text: 'System Settings', route: '/settings'},
                 ]
 
                 // links: [

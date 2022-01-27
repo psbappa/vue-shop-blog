@@ -100,7 +100,7 @@
                                             
                                             <v-col cols="12" sm="6" md="4">
                                                 <!-- <pre> {{ JSON.stringify(editedItem.category, null, 2) }}</pre> -->
-                                                <!-- <v-select 
+                                                <v-select 
                                                     ref="formData.category"
                                                     v-model="editedItem.category"
                                                     :item = "editedItem.category"
@@ -110,18 +110,18 @@
                                                     background-color="cyan darken-2"
                                                     label="category" 
                                                     dense >
-                                                </v-select> -->
+                                                </v-select>
                                             </v-col>
                                             
                                             <v-col cols="12" sm="6" md="4">
-                                                <!-- <v-select 
+                                                <v-select 
                                                     ref="editedItem.colors"
                                                     v-model="editedItem.colors"
                                                     filled
                                                     background-color="cyan darken-2"
                                                     label="colors" 
                                                     dense >
-                                                </v-select> -->
+                                                </v-select>
                                             </v-col>
 
                                             <v-col cols="12">
@@ -216,8 +216,8 @@
                 weight: '',
                 price: '',
                 imageFilename: [],
-                // category: '',
-                // colors: [],
+                category: '',
+                colors: [],
                 stockQuantity: ''
             },
             defaultItem: {
@@ -257,15 +257,14 @@
             }
         },
 
-        mounted() {
+        async mounted() {
             // this.$store.dispatch('GET_PRODUCTS')
             // this.initialize()
 
-            axios.get('http://127.0.0.1:8000/api/products').then(res => {
-                this.defaultProducts = res.data['hydra:member']
-            }).catch(e => {
-                console.log(e)
-            })
+            let products = await axios.get('http://127.0.0.1:8000/api/products')
+            if(products.status === 200) {
+                this.defaultProducts = products.data['hydra:member']
+            }
         },
 
         watch: {
